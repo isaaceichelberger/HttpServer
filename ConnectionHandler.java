@@ -17,12 +17,12 @@ public class ConnectionHandler extends Thread {
     }
 
     private static void handleClient(Socket client) throws IOException {
-        System.out.println("Handling client");
         BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
         StringBuilder requestBuilder = new StringBuilder();
         String line;
         while (!(line = br.readLine()).isBlank()) {
+            System.out.println(line);
             requestBuilder.append(line + "\r\n");
         }
 
@@ -40,11 +40,12 @@ public class ConnectionHandler extends Thread {
             headers.add(header);
         }
 
-        String accessLog = String.format("Client %s, method %s, path %s, version %s, host %s, headers %s",
+        /*String accessLog = String.format("Client %s, method %s, path %s, version %s, host %s, headers %s",
                 client.toString(), method, path, version, host, headers.toString());
-        System.out.println(accessLog);
+        System.out.println(accessLog);*/
 
 
+        //System.out.println(path);
         Path filePath = getFilePath(path);
         if (Files.exists(filePath)) {
             // file exist
@@ -53,6 +54,7 @@ public class ConnectionHandler extends Thread {
         } else {
             // 404
             byte[] notFoundContent = "<h1>Not found :(</h1>".getBytes();
+            // TODO This response isn't sending correctly
             sendResponse(client, "404 Not Found", "text/html", notFoundContent);
         }
 
@@ -61,9 +63,11 @@ public class ConnectionHandler extends Thread {
     
     private static void sendResponse(Socket client, String status, String contentType, byte[] content) throws IOException {
         OutputStream clientOutput = client.getOutputStream();
-        clientOutput.write(("HTTP/1.1 \r\n" + status).getBytes());
-        clientOutput.write(("ContentType: " + contentType + "\r\n").getBytes());
-        clientOutput.write("\r\n".getBytes());
+        //System.out.println("Status: " + status);
+        // TODO either im not seeing this right in the console or im doing this wrong
+        clientOutput.write(("HTTP/1.1 " + status + "\r\n\r\n").getBytes("UTF-8"));
+        clientOutput.write(("ContentType: " + contentType + "\r\n").getBytes("UTF-8"));
+        clientOutput.write("\r\n".getBytes("UTF-8"));
         clientOutput.write(content);
         clientOutput.write("\r\n\r\n".getBytes());
         clientOutput.flush();
@@ -72,10 +76,10 @@ public class ConnectionHandler extends Thread {
 
     private static Path getFilePath(String path) {
         if ("/".equals(path)) {
-            path = "/index.html";
+            path = "index.html";
         }
 
-        return Paths.get("/tmp/www", path);
+        return Paths.get("", path);
     }
 
     private static String guessContentType(Path filePath) throws IOException {

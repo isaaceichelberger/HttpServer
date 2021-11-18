@@ -16,13 +16,19 @@ public class HttpServer {
             System.out.println("Started HTTP Server on port " + port);
                 try (ServerSocket serverSocket = new ServerSocket(port)) {
                 while (true) {
-                    try (Socket client = serverSocket.accept()) {
-                        new Thread(() -> new ConnectionHandler(client)).start();
-                    }
+                    Socket client = serverSocket.accept();
+                    new Thread(() -> new ConnectionHandler(client)).start();
                 }
             }
         } else {
-            System.out.println("Invalid usage. Use java HttpServer (port)");
+            int port = 80;
+             System.out.println("Started HTTP Server on port " + port);
+                try (ServerSocket serverSocket = new ServerSocket(port)) {
+                while (true) {
+                    Socket client = serverSocket.accept();
+                    new Thread(() -> new ConnectionHandler(client)).start();
+                }
+            }
         }
 
     }
