@@ -21,16 +21,10 @@ public class HttpServer {
                 }
             }
         } else {
-            int port = 80;
-             System.out.println("Started HTTP Server on port " + port);
-                try (ServerSocket serverSocket = new ServerSocket(port)) {
-                while (true) {
-                    Socket client = serverSocket.accept();
-                    new Thread(() -> new ConnectionHandler(client)).start();
-                }
+             System.out.println("Please specify a port. Use java HttpServer (port)");
+             System.exit(-1);
             }
         }
 
-    }
 
 }
